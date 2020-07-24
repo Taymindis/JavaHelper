@@ -1,17 +1,17 @@
 package com.github.taymindis;
 
-public class NonSuckLockRequest {
+public class NSLockIssueRequest {
     private final String reqName;
-    private NonSuckSynchronizeRequest nssrq = null;
-    public NonSuckLockRequest(String reqName) {
+    private NSSynchronizeIssueRequest nssrq = null;
+    public NSLockIssueRequest(String reqName) {
         this.reqName = reqName;
     }
 
     public boolean tryLock() {
         if(nssrq == null) {
-            nssrq = new NonSuckSynchronizeRequest(this.reqName);
+            nssrq = new NSSynchronizeIssueRequest(this.reqName);
         }
-        if (nssrq.getProcessStatus() != NonSuckSynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
+        if (nssrq.getProcessStatus() != NSSynchronizeIssueRequest.PROCESS_IS_OK_TO_RUN) {
             nssrq = null;
             return false;
         }

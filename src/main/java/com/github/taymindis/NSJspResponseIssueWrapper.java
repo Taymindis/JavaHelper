@@ -17,12 +17,12 @@ import java.io.StringWriter;
  *   		}, responseWrapper);
  *
  */
-public class NonSuckJspResponseWrapper extends HttpServletResponseWrapper {
+public class NSJspResponseIssueWrapper extends HttpServletResponseWrapper {
 
     private int httpStatus;
     private final StringWriter sw = new StringWriter();
 
-    public NonSuckJspResponseWrapper(HttpServletResponse response) {
+    public NSJspResponseIssueWrapper(HttpServletResponse response) {
         super(response);
     }
 

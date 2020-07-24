@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class NonSuckSSLIssueHttp {
+public class NSSSLIssueHttp {
 
     private int statusCode;
     private String response = null;
@@ -27,15 +27,15 @@ public class NonSuckSSLIssueHttp {
     private static final String USER_AGENT = "Mozilla/5.0";
     private boolean tls1_2 = true;
 
-    public NonSuckSSLIssueHttp() {
+    public NSSSLIssueHttp() {
 
     }
 
-    public NonSuckSSLIssueHttp(boolean tls1_2) {
+    public NSSSLIssueHttp(boolean tls1_2) {
         this.tls1_2 = tls1_2;
     }
 
-    public NonSuckSSLIssueHttp(int connTimeout, int readTimeout, boolean tls1_2) {
+    public NSSSLIssueHttp(int connTimeout, int readTimeout, boolean tls1_2) {
         this.connTimeout = connTimeout;
         this.readTimeout = readTimeout;
         this.tls1_2 = tls1_2;

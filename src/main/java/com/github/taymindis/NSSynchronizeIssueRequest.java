@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class NonSuckSynchronizeRequest {
+public class NSSynchronizeIssueRequest {
     private final String name;
     private int processStatus;
 
-    public NonSuckSynchronizeRequest(String name) {
+    public NSSynchronizeIssueRequest(String name) {
         this.name = name;
         if (name == null) {
             processStatus = PROCESS_NAME_IS_EMPTY;
