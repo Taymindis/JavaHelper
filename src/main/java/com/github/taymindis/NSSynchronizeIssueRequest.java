@@ -44,6 +44,15 @@ public class NSSynchronizeIssueRequest {
         }
     }
 
+
+    /**
+     * @param name
+     * @return boolean
+     */
+    public static boolean isProcessBusy(String name) {
+        return name != null && _$requests.contains(name);
+    }
+
     /**
      * Use in Risk
      */
