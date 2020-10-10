@@ -4,13 +4,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NSSynchronizeIssueProcess extends NSSynchronizeIssueRequest {
+public class OJHSynchronizeProcess extends OJHSynchronizeRequest {
     private static Thread notificationThreads;
-    private static Map<String, NSSynchronizeIssueProcess> processNamesLiving = new HashMap<String, NSSynchronizeIssueProcess>();
+    private static Map<String, OJHSynchronizeProcess> processNamesLiving = new HashMap<String, OJHSynchronizeProcess>();
     private Thread processThread;
     private Long rollingTime;
     private boolean alertable;
-    private NSAlertableIssue nsAlertableIssue;
+    private OJHAlertable OJHAlertable;
     private static boolean isProcessOn = true;
 
     static {
@@ -18,14 +18,14 @@ public class NSSynchronizeIssueProcess extends NSSynchronizeIssueRequest {
         notificationThreads.start();
     }
 
-    public NSSynchronizeIssueProcess(String name, NSAlertableIssue nsAlertableIssue_) {
+    public OJHSynchronizeProcess(String name, OJHAlertable OJHAlertable_) {
         super(name);
         int errCode = this.getErrorCode();
-        this.nsAlertableIssue = nsAlertableIssue_;
-        this.alertable = this.nsAlertableIssue.shouldAlert();
-        if (errCode != NSSynchronizeIssueRequest.PROCESS_IS_OK_TO_RUN) {
+        this.OJHAlertable = OJHAlertable_;
+        this.alertable = this.OJHAlertable.shouldAlert();
+        if (errCode != OJHSynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
             String log = name + " process is still running or invalid process ";
-            nsAlertableIssue.logInfo(log);
+            OJHAlertable.logInfo(log);
         } else {
             if (notificationThreads == null || notificationThreads.isInterrupted() || !notificationThreads.isAlive()) {
                 notificationThreads = newThread();
@@ -46,8 +46,8 @@ public class NSSynchronizeIssueProcess extends NSSynchronizeIssueRequest {
     }
 
     public static void releaseAllProcess() {
-        for (Map.Entry<String, NSSynchronizeIssueProcess> pLiving : processNamesLiving.entrySet()) {
-            NSSynchronizeIssueProcess thisProcess = pLiving.getValue();
+        for (Map.Entry<String, OJHSynchronizeProcess> pLiving : processNamesLiving.entrySet()) {
+            OJHSynchronizeProcess thisProcess = pLiving.getValue();
             thisProcess.release();
         }
     }
@@ -66,10 +66,10 @@ public class NSSynchronizeIssueProcess extends NSSynchronizeIssueRequest {
 
     /**
      * Use in Risk
-     * @param processName
+     * @param processName process name
      */
     public static void kill(String processName) {
-        NSSynchronizeIssueProcess syncTrackableProcess = processNamesLiving.get(processName);
+        OJHSynchronizeProcess syncTrackableProcess = processNamesLiving.get(processName);
         if(syncTrackableProcess != null) {
             syncTrackableProcess.getProcessThread().interrupt();
             syncTrackableProcess.release();
@@ -82,15 +82,15 @@ public class NSSynchronizeIssueProcess extends NSSynchronizeIssueRequest {
                 try {
                     while (isProcessOn) {
                         Long currTime = new Date().getTime();
-                        for (Map.Entry<String, NSSynchronizeIssueProcess> pLiving : processNamesLiving.entrySet()) {
-                            NSSynchronizeIssueProcess thisProcess = pLiving.getValue();
+                        for (Map.Entry<String, OJHSynchronizeProcess> pLiving : processNamesLiving.entrySet()) {
+                            OJHSynchronizeProcess thisProcess = pLiving.getValue();
                             if(!thisProcess.alertable) {
                                 continue;
                             }
                             Long startedTime = thisProcess.getRollingTime();
                             Long secs = (currTime - startedTime) / 1000L;
                             if (secs > 300) {
-                                thisProcess.nsAlertableIssue.triggerAlert(thisProcess.getName(), "Processing time out");
+                                thisProcess.OJHAlertable.triggerAlert(thisProcess.getName(), "Processing time out");
                                 thisProcess.setRollingTime(currTime);
                                 pLiving.setValue(thisProcess);
                             }
@@ -105,7 +105,7 @@ public class NSSynchronizeIssueProcess extends NSSynchronizeIssueRequest {
     }
 
     public static void setIsProcessOn(boolean isProcessOn) {
-        NSSynchronizeIssueProcess.isProcessOn = isProcessOn;
+        OJHSynchronizeProcess.isProcessOn = isProcessOn;
     }
 }
 

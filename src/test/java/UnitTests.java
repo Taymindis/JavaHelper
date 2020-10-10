@@ -1,5 +1,5 @@
-import com.github.taymindis.NSLockIssueRequest;
-import com.github.taymindis.NSSSLIssueHttp;
+import com.github.taymindis.OJHLockRequest;
+import com.github.taymindis.OJHSSLHttp;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ public class UnitTests {
     private static final Logger logger = Logger.getLogger(UnitTests.class.getName());
     private void testRequest(String custid, boolean checkLock) {
 
-        NSLockIssueRequest lockRequest = new NSLockIssueRequest(custid);
+        OJHLockRequest lockRequest = new OJHLockRequest(custid);
 
         try {
             boolean isLock = lockRequest.tryLock();
@@ -53,7 +53,7 @@ public class UnitTests {
         second.join();
 
 
-        NSLockIssueRequest lockRequest = new NSLockIssueRequest(testName);
+        OJHLockRequest lockRequest = new OJHLockRequest(testName);
 
         Assert.assertTrue("It should not locked", lockRequest.tryLock());
 
@@ -64,9 +64,9 @@ public class UnitTests {
         logger.log(Level.INFO, "testNonSuckSSLRequest - " + url);
 
         try {
-            NSSSLIssueHttp http = new NSSSLIssueHttp(true);
+            OJHSSLHttp http = new OJHSSLHttp(true);
 
-            http.getRequest(url, NSSSLIssueHttp.useXFormUrlEncoded());
+            http.getRequest(url, OJHSSLHttp.useXFormUrlEncoded());
 
             Assert.assertEquals(200, http.getStatusCode());
             Assert.assertNotNull("No Response found", http.getResponse());

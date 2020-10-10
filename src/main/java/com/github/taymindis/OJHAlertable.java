@@ -1,6 +1,6 @@
 package com.github.taymindis;
 
-public interface NSAlertableIssue {
+public interface OJHAlertable {
 
     boolean isApplicationRunning();
 

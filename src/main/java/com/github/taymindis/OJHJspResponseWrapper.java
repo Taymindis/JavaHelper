@@ -6,23 +6,23 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- * JspResponseWrapper responseWrapper = new JspResponseWrapper(response);
- *   request.getRequestDispatcher("/apps/a/b/c.jsp?custid=" + custId + "&custemail=" + custemail)
- *   		.include(new HttpServletRequestWrapper(request) {
- *   			@Override
- *   			public String getMethod() {
- *   				return "POST";
- *   			}
- *   		}, responseWrapper);
- *
- */
-public class NSJspResponseIssueWrapper extends HttpServletResponseWrapper {
+//
+// JspResponseWrapper responseWrapper = new JspResponseWrapper(response);
+//   request.getRequestDispatcher("/apps/a/b/c.jsp?custid=" + custId + "&custemail=" + custemail)
+//   		.include(new HttpServletRequestWrapper(request) {
+//   			@Override
+//   			public String getMethod() {
+//   				return "POST";
+//   			}
+//   		}, responseWrapper);
+//
+//
+public class OJHJspResponseWrapper extends HttpServletResponseWrapper {
 
     private int httpStatus;
     private final StringWriter sw = new StringWriter();
 
-    public NSJspResponseIssueWrapper(HttpServletResponse response) {
+    public OJHJspResponseWrapper(HttpServletResponse response) {
         super(response);
     }
 

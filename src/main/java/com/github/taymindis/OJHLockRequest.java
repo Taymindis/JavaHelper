@@ -1,17 +1,17 @@
 package com.github.taymindis;
 
-public class NSLockIssueRequest {
+public class OJHLockRequest {
     private final String reqName;
-    private NSSynchronizeIssueRequest nssrq = null;
-    public NSLockIssueRequest(String reqName) {
+    private OJHSynchronizeRequest nssrq = null;
+    public OJHLockRequest(String reqName) {
         this.reqName = reqName;
     }
 
     public boolean tryLock() {
         if(nssrq == null) {
-            nssrq = new NSSynchronizeIssueRequest(this.reqName);
+            nssrq = new OJHSynchronizeRequest(this.reqName);
         }
-        if (nssrq.getProcessStatus() != NSSynchronizeIssueRequest.PROCESS_IS_OK_TO_RUN) {
+        if (nssrq.getProcessStatus() != OJHSynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
             nssrq = null;
             return false;
         }

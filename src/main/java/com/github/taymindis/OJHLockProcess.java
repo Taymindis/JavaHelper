@@ -1,14 +1,14 @@
 package com.github.taymindis;
 
-public class NSLockIssueProcess {
+public class OJHLockProcess {
     private final String reqName;
-    private NSSynchronizeIssueProcess nonSuckIssueSynchronizeProcess = null;
-    private NSAlertableIssue nsAlertableIssue;
+    private OJHSynchronizeProcess nonSuckIssueSynchronizeProcess = null;
+    private OJHAlertable OJHAlertable;
 
-    public NSLockIssueProcess(String reqName, NSAlertableIssue nsAlertableIssue_) {
+    public OJHLockProcess(String reqName, OJHAlertable OJHAlertable_) {
         this.reqName = reqName;
-        if(nsAlertableIssue_ == null) {
-            nsAlertableIssue = new NSAlertableIssue() {
+        if(OJHAlertable_ == null) {
+            OJHAlertable = new OJHAlertable() {
                 @Override
                 public boolean isApplicationRunning() {
                     return false;
@@ -35,22 +35,22 @@ public class NSLockIssueProcess {
                 }
             };
         } else {
-            nsAlertableIssue = nsAlertableIssue_;
+            OJHAlertable = OJHAlertable_;
         }
     }
 
     public boolean tryLock() {
         try {
             if (nonSuckIssueSynchronizeProcess == null) {
-                nonSuckIssueSynchronizeProcess = new NSSynchronizeIssueProcess(this.reqName, this.nsAlertableIssue);
+                nonSuckIssueSynchronizeProcess = new OJHSynchronizeProcess(this.reqName, this.OJHAlertable);
             }
-            if (nonSuckIssueSynchronizeProcess.getProcessStatus() != NSSynchronizeIssueRequest.PROCESS_IS_OK_TO_RUN) {
+            if (nonSuckIssueSynchronizeProcess.getProcessStatus() != OJHSynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
                 nonSuckIssueSynchronizeProcess = null;
-                nsAlertableIssue.logError(new Exception("Process has been locked "));
+                OJHAlertable.logError(new Exception("Process has been locked "));
                 return false;
             }
         } catch (Exception e) {
-            nsAlertableIssue.logError(e);
+            OJHAlertable.logError(e);
         }
         return true;
     }

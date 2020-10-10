@@ -10,11 +10,11 @@ import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Map;
 
-public class NSJspRequestIssueWrapper extends HttpServletRequestWrapper {
+public class OJHJspRequestWrapper extends HttpServletRequestWrapper {
 
     private String _body;
 
-    public NSJspRequestIssueWrapper(HttpServletRequest request) throws IOException {
+    public OJHJspRequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
         _body = "";
         BufferedReader bufferedReader = request.getReader();

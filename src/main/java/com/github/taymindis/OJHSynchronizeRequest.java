@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class NSSynchronizeIssueRequest {
+public class OJHSynchronizeRequest {
     private final String name;
     private int processStatus;
 
-    public NSSynchronizeIssueRequest(String name) {
+    public OJHSynchronizeRequest(String name) {
         this.name = name;
         if (name == null) {
             processStatus = PROCESS_NAME_IS_EMPTY;
@@ -46,22 +46,24 @@ public class NSSynchronizeIssueRequest {
 
 
     /**
-     * @param name
-     * @return boolean
+     check if process is busy
+     @param name ProcessName
+     @return boolean
      */
     public static boolean isProcessBusy(String name) {
         return name != null && _$requests.contains(name);
     }
 
     /**
-     * Use in Risk
+     Use in Risk
      */
     public static void flushAll() {
         flush(null);
     }
 
     /**
-     * Use in Risk
+     Use in Risk
+     @param nameStartWith Process Name start with
      */
     public static void flush(String nameStartWith) {
         if (nameStartWith == null) {
