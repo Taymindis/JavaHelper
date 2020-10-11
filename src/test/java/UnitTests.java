@@ -1,5 +1,5 @@
-import com.github.taymindis.OJHLockRequest;
-import com.github.taymindis.OJHSSLHttp;
+import com.github.taymindis.jh.LockRequest;
+import com.github.taymindis.jh.SSLHttp;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ public class UnitTests {
     private static final Logger logger = Logger.getLogger(UnitTests.class.getName());
     private void testRequest(String custid, boolean checkLock) {
 
-        OJHLockRequest lockRequest = new OJHLockRequest(custid);
+        LockRequest lockRequest = new LockRequest(custid);
 
         try {
             boolean isLock = lockRequest.tryLock();
@@ -53,7 +53,7 @@ public class UnitTests {
         second.join();
 
 
-        OJHLockRequest lockRequest = new OJHLockRequest(testName);
+        LockRequest lockRequest = new LockRequest(testName);
 
         Assert.assertTrue("It should not locked", lockRequest.tryLock());
 
@@ -64,9 +64,9 @@ public class UnitTests {
         logger.log(Level.INFO, "testNonSuckSSLRequest - " + url);
 
         try {
-            OJHSSLHttp http = new OJHSSLHttp(true);
+            SSLHttp http = new SSLHttp(true);
 
-            http.getRequest(url, OJHSSLHttp.useXFormUrlEncoded());
+            http.getRequest(url, SSLHttp.useXFormUrlEncoded());
 
             Assert.assertEquals(200, http.getStatusCode());
             Assert.assertNotNull("No Response found", http.getResponse());

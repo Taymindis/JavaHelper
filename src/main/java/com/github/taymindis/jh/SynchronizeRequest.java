@@ -1,15 +1,15 @@
-package com.github.taymindis;
+package com.github.taymindis.jh;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class OJHSynchronizeRequest {
+public class SynchronizeRequest {
     private final String name;
     private int processStatus;
 
-    public OJHSynchronizeRequest(String name) {
+    public SynchronizeRequest(String name) {
         this.name = name;
         if (name == null) {
             processStatus = PROCESS_NAME_IS_EMPTY;

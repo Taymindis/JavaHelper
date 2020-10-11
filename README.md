@@ -1,3 +1,7 @@
-# NonSuckOldJavaHelper
+# JavaHelper
 
-NonSuckOldJavaHelp which does not make you suck when you having old java environment.
+ #### Java Helper to help for
+    - SSL tls1.2 not working by default
+    - jsp as an API synchronizing issue
+    - PaaS(Page as a service) and etc...
+    - Lock Request Process

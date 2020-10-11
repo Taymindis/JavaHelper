@@ -1,17 +1,17 @@
-package com.github.taymindis;
+package com.github.taymindis.jh;
 
-public class OJHLockRequest {
+public class LockRequest {
     private final String reqName;
-    private OJHSynchronizeRequest nssrq = null;
-    public OJHLockRequest(String reqName) {
+    private SynchronizeRequest nssrq = null;
+    public LockRequest(String reqName) {
         this.reqName = reqName;
     }
 
     public boolean tryLock() {
         if(nssrq == null) {
-            nssrq = new OJHSynchronizeRequest(this.reqName);
+            nssrq = new SynchronizeRequest(this.reqName);
         }
-        if (nssrq.getProcessStatus() != OJHSynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
+        if (nssrq.getProcessStatus() != SynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
             nssrq = null;
             return false;
         }

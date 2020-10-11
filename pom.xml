@@ -5,18 +5,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.taymindis</groupId>
-    <artifactId>NonSuckOldJavaHelper</artifactId>
+    <artifactId>JavaHelper</artifactId>
     <version>${current.version}</version>
     <packaging>jar</packaging>
-    <name>NonSuckOldJavaHelper</name>
+    <name>JavaHelper</name>
     <description>
-        Old Java Helper(jsp, less than version 7 ) to help for security issue,
-        SSL tls1.2 not working by default
-        jsp as an API synchronizing issue
-        and etc...
+        Java Helper to help for
+        - SSL tls1.2 not working by default
+        - jsp as an API synchronizing issue
+        - PaaS(Page as a service) and etc...
+        - Lock Request Process
     </description>
     <properties>
-        <current.version>1.1-SNAPSHOT</current.version>
+        <current.version>1.0-SNAPSHOT</current.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
@@ -27,15 +28,15 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <url>https://github.com/Taymindis/NonSuckOldJavaHelper</url>
+    <url>https://github.com/Taymindis/JavaHelper</url>
     <scm>
-        <url>https://github.com/Taymindis/NonSuckOldJavaHelper.git</url>
-        <connection>scm:git:git://github.com/Taymindis/NonSuckOldJavaHelper.git</connection>
-        <developerConnection>scm:git:git://github.com/Taymindis/NonSuckOldJavaHelper.git</developerConnection>
+        <url>https://github.com/Taymindis/JavaHelper.git</url>
+        <connection>scm:git:git://github.com/Taymindis/JavaHelper.git</connection>
+        <developerConnection>scm:git:git://github.com/Taymindis/JavaHelper.git</developerConnection>
     </scm>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/Taymindis/NonSuckOldJavaHelper/issues</url>
+        <url>https://github.com/Taymindis/JavaHelper/issues</url>
     </issueManagement>
 
     <developers>

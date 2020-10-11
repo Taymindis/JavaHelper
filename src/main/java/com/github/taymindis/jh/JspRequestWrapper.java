@@ -1,4 +1,4 @@
-package com.github.taymindis;
+package com.github.taymindis.jh;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -10,11 +10,11 @@ import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Map;
 
-public class OJHJspRequestWrapper extends HttpServletRequestWrapper {
+public class JspRequestWrapper extends HttpServletRequestWrapper {
 
     private String _body;
 
-    public OJHJspRequestWrapper(HttpServletRequest request) throws IOException {
+    public JspRequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
         _body = "";
         BufferedReader bufferedReader = request.getReader();

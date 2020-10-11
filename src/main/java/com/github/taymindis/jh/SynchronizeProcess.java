@@ -1,16 +1,16 @@
-package com.github.taymindis;
+package com.github.taymindis.jh;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OJHSynchronizeProcess extends OJHSynchronizeRequest {
+public class SynchronizeProcess extends SynchronizeRequest {
     private static Thread notificationThreads;
-    private static Map<String, OJHSynchronizeProcess> processNamesLiving = new HashMap<String, OJHSynchronizeProcess>();
+    private static Map<String, SynchronizeProcess> processNamesLiving = new HashMap<String, SynchronizeProcess>();
     private Thread processThread;
     private Long rollingTime;
     private boolean alertable;
-    private OJHAlertable OJHAlertable;
+    private Alertable Alertable;
     private static boolean isProcessOn = true;
 
     static {
@@ -18,14 +18,14 @@ public class OJHSynchronizeProcess extends OJHSynchronizeRequest {
         notificationThreads.start();
     }
 
-    public OJHSynchronizeProcess(String name, OJHAlertable OJHAlertable_) {
+    public SynchronizeProcess(String name, Alertable Alertable_) {
         super(name);
         int errCode = this.getErrorCode();
-        this.OJHAlertable = OJHAlertable_;
-        this.alertable = this.OJHAlertable.shouldAlert();
-        if (errCode != OJHSynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
+        this.Alertable = Alertable_;
+        this.alertable = this.Alertable.shouldAlert();
+        if (errCode != SynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
             String log = name + " process is still running or invalid process ";
-            OJHAlertable.logInfo(log);
+            Alertable.logInfo(log);
         } else {
             if (notificationThreads == null || notificationThreads.isInterrupted() || !notificationThreads.isAlive()) {
                 notificationThreads = newThread();
@@ -46,8 +46,8 @@ public class OJHSynchronizeProcess extends OJHSynchronizeRequest {
     }
 
     public static void releaseAllProcess() {
-        for (Map.Entry<String, OJHSynchronizeProcess> pLiving : processNamesLiving.entrySet()) {
-            OJHSynchronizeProcess thisProcess = pLiving.getValue();
+        for (Map.Entry<String, SynchronizeProcess> pLiving : processNamesLiving.entrySet()) {
+            SynchronizeProcess thisProcess = pLiving.getValue();
             thisProcess.release();
         }
     }
@@ -69,7 +69,7 @@ public class OJHSynchronizeProcess extends OJHSynchronizeRequest {
      * @param processName process name
      */
     public static void kill(String processName) {
-        OJHSynchronizeProcess syncTrackableProcess = processNamesLiving.get(processName);
+        SynchronizeProcess syncTrackableProcess = processNamesLiving.get(processName);
         if(syncTrackableProcess != null) {
             syncTrackableProcess.getProcessThread().interrupt();
             syncTrackableProcess.release();
@@ -82,15 +82,15 @@ public class OJHSynchronizeProcess extends OJHSynchronizeRequest {
                 try {
                     while (isProcessOn) {
                         Long currTime = new Date().getTime();
-                        for (Map.Entry<String, OJHSynchronizeProcess> pLiving : processNamesLiving.entrySet()) {
-                            OJHSynchronizeProcess thisProcess = pLiving.getValue();
+                        for (Map.Entry<String, SynchronizeProcess> pLiving : processNamesLiving.entrySet()) {
+                            SynchronizeProcess thisProcess = pLiving.getValue();
                             if(!thisProcess.alertable) {
                                 continue;
                             }
                             Long startedTime = thisProcess.getRollingTime();
                             Long secs = (currTime - startedTime) / 1000L;
                             if (secs > 300) {
-                                thisProcess.OJHAlertable.triggerAlert(thisProcess.getName(), "Processing time out");
+                                thisProcess.Alertable.triggerAlert(thisProcess.getName(), "Processing time out");
                                 thisProcess.setRollingTime(currTime);
                                 pLiving.setValue(thisProcess);
                             }
@@ -105,7 +105,7 @@ public class OJHSynchronizeProcess extends OJHSynchronizeRequest {
     }
 
     public static void setIsProcessOn(boolean isProcessOn) {
-        OJHSynchronizeProcess.isProcessOn = isProcessOn;
+        SynchronizeProcess.isProcessOn = isProcessOn;
     }
 }
 

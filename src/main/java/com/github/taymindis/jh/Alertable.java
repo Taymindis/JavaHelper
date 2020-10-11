@@ -1,6 +1,6 @@
-package com.github.taymindis;
+package com.github.taymindis.jh;
 
-public interface OJHAlertable {
+public interface Alertable {
 
     boolean isApplicationRunning();
 

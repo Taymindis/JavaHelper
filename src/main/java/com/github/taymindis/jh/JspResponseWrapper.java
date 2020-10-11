@@ -1,4 +1,4 @@
-package com.github.taymindis;
+package com.github.taymindis.jh;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -17,12 +17,12 @@ import java.io.StringWriter;
 //   		}, responseWrapper);
 //
 //
-public class OJHJspResponseWrapper extends HttpServletResponseWrapper {
+public class JspResponseWrapper extends HttpServletResponseWrapper {
 
     private int httpStatus;
     private final StringWriter sw = new StringWriter();
 
-    public OJHJspResponseWrapper(HttpServletResponse response) {
+    public JspResponseWrapper(HttpServletResponse response) {
         super(response);
     }
 
