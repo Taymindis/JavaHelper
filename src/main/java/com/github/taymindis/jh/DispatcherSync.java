@@ -40,7 +40,7 @@ public class DispatcherSync extends Dispatcher {
      */
     public DispatcherSync dispatch(String jspPathAndParam) throws ServletException, IOException {
 
-        super.getRequestDispatcher(jspPathAndParam)
+        super.getRequestDispatcher(Dispatcher.resourcePath + jspPathAndParam + Dispatcher.suffix)
                 .include(this, new HttpServletResponseWrapper(response) {
                     @Override
                     public void sendError(int sc) throws IOException {

@@ -6,7 +6,7 @@
 
     <groupId>com.github.taymindis</groupId>
     <artifactId>JavaHelper</artifactId>
-    <version>${current.version}</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
     <name>JavaHelper</name>
     <description>
@@ -17,7 +17,6 @@
         - Lock Request Process
     </description>
     <properties>
-        <current.version>1.0-SNAPSHOT</current.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>

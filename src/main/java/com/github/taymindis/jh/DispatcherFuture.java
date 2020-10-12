@@ -51,7 +51,7 @@ public class DispatcherFuture extends Dispatcher {
         f = getBgExecutor().submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                getRequest().getRequestDispatcher(jspPathAndParam)
+                getRequest().getRequestDispatcher(Dispatcher.resourcePath + jspPathAndParam + Dispatcher.suffix)
                         .include(df, new HttpServletResponseWrapper(response) {
                             @Override
                             public void sendError(int sc) throws IOException {

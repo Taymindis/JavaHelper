@@ -9,6 +9,9 @@ import java.util.concurrent.*;
 
 public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     private static ThreadPoolExecutor bgExecutor = null;
+    public static String resourcePath = "";
+    public static String suffix = "";
+    public static String splitter = ".";
     protected int httpStatus;
 
     public Dispatcher(HttpServletRequest request) {
@@ -26,10 +29,20 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         return new DispatcherFuture(request, response);
     }
 
-    public static void init(String resourcePath, int nWorkerThread) {
+    public static void init(String $resourcePath, String $suffix, String $splitter, int nWorkerThread) {
         if(null == bgExecutor) {
             bgExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(nWorkerThread);
         }
+        if(null != $resourcePath) {
+            Dispatcher.resourcePath = $resourcePath;
+        }
+        if(null != $suffix) {
+            Dispatcher.suffix = $suffix;
+        }
+        if(null != $splitter) {
+            Dispatcher.splitter = $splitter;
+        }
+
     }
 
     public static boolean isDispatchFutureEnabled() {
@@ -64,7 +77,6 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
             e.printStackTrace();
         }
     }
-
 
 
 
