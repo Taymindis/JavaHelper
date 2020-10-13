@@ -9,10 +9,10 @@ import java.util.concurrent.*;
 /**
  * dispatching async between web container
  */
-public class DispatcherFuture extends Dispatcher {
+public class DispatcherFuture<T> extends Dispatcher {
     private HttpServletResponse response;
     private Future<Void> f;
-    private Object result;
+    private T result;
 
     protected DispatcherFuture(HttpServletRequest request, HttpServletResponse response) {
         super(request);
@@ -26,21 +26,28 @@ public class DispatcherFuture extends Dispatcher {
         return this;
     }
 
-    public DispatcherFuture a(String key, Object val) {
+    @Override
+    public DispatcherFuture set(String key, Object val) {
         super.setAttribute(key, val);
         return this;
     }
 
+    @Override
+    public Object get(String key) {
+        return super.getAttribute(key);
+    }
+
+
     /**
      * dispatching first between the file via web container, get the result at the end of request
      *
-     * @param jspPathAndParam resource path
+     * @param jspPath resource path
      * @return DispatchFuture
      * @throws IOException      IOException
      * @throws ServletException ServletException
      */
     @Override
-    public synchronized DispatcherFuture dispatch(final String jspPathAndParam) throws Exception {
+    public synchronized DispatcherFuture dispatch(final String jspPath) throws Exception {
         if (isDispatchFutureEnabled()) {
             throw new Exception("Background Task feature is not enabled");
         }
@@ -51,7 +58,7 @@ public class DispatcherFuture extends Dispatcher {
         f = getBgExecutor().submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                getRequest().getRequestDispatcher(Dispatcher.resourcePath + jspPathAndParam + Dispatcher.suffix)
+                getRequest().getRequestDispatcher(Dispatcher.resourcePath + jspPath.replace(Dispatcher.splitter, "/") + Dispatcher.suffix)
                         .include(df, new HttpServletResponseWrapper(response) {
                             @Override
                             public void sendError(int sc) throws IOException {
@@ -94,11 +101,11 @@ public class DispatcherFuture extends Dispatcher {
 
     @Override
     public void setResult(Object rs) {
-        this.result = rs;
+        this.result = (T) rs;
     }
 
     @Override
-    public Object getResult() {
+    public T getResult() {
         if(this.result == null) {
             try {
                 f.get();
@@ -112,7 +119,7 @@ public class DispatcherFuture extends Dispatcher {
     }
 
     @Override
-    public Object getResult(long timeout, TimeUnit unit)  {
+    public T getResult(long timeout, TimeUnit unit)  {
         if(this.result == null) {
             try {
                 f.get(timeout, unit);

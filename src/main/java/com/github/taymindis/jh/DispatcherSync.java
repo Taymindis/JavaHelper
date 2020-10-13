@@ -11,9 +11,9 @@ import java.util.concurrent.TimeUnit;
 /**
  dispatching in between web container
  */
-public class DispatcherSync extends Dispatcher {
+public class DispatcherSync<T> extends Dispatcher {
     private HttpServletResponse response;
-    private Object result;
+    private T result;
 
     protected DispatcherSync(HttpServletRequest request, HttpServletResponse response) {
         super(request);
@@ -26,21 +26,27 @@ public class DispatcherSync extends Dispatcher {
         return this;
     }
 
-    public DispatcherSync a(String key, Object val) {
+    @Override
+    public DispatcherSync set(String key, Object val) {
         super.setAttribute(key, val);
         return this;
     }
 
+    @Override
+    public Object get(String key) {
+        return super.getAttribute(key);
+    }
+
     /**
      dispatching between the file via web container
-     @param jspPathAndParam resource path
+     @param jspPath resource path
      @throws IOException IOException
      @throws ServletException ServletException
      @return OJHDispatcher
      */
-    public DispatcherSync dispatch(String jspPathAndParam) throws ServletException, IOException {
+    public DispatcherSync dispatch(String jspPath) throws ServletException, IOException {
 
-        super.getRequestDispatcher(Dispatcher.resourcePath + jspPathAndParam + Dispatcher.suffix)
+        super.getRequestDispatcher(Dispatcher.resourcePath + jspPath.replace(Dispatcher.splitter, "/") + Dispatcher.suffix)
                 .include(this, new HttpServletResponseWrapper(response) {
                     @Override
                     public void sendError(int sc) throws IOException {
@@ -66,15 +72,15 @@ public class DispatcherSync extends Dispatcher {
     }
 
     public void setResult(Object rs) {
-        this.result = rs;
+        this.result = (T) rs;
     }
 
-    public Object getResult() {
+    public T getResult() {
         return this.result;
     }
 
     @Override
-    public Object getResult(long timeout, TimeUnit unit) {
+    public T getResult(long timeout, TimeUnit unit) {
         return this.result;
     }
 
