@@ -216,6 +216,11 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
 
     public abstract Object get(String key);
 
+    public abstract String getString(String key);
+    public abstract Integer getInteger(String key);
+    public abstract Long getLong(String key);
+    public abstract Double getDouble(String key);
+
     public abstract Dispatcher dispatch(String jspPathAndParam) throws ServletException, IOException, Exception;
 
     public abstract void setResult(T rs);

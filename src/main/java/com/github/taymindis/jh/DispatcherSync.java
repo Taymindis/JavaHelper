@@ -37,6 +37,27 @@ public class DispatcherSync<T> extends Dispatcher {
         return super.getAttribute(key);
     }
 
+    @Override
+    public String getString(String key) {
+        return String.valueOf(super.getAttribute(key));
+    }
+
+    @Override
+    public Integer getInteger(String key) {
+        return (Integer) super.getAttribute(key);
+    }
+
+    @Override
+    public Long getLong(String key) {
+        return (Long) super.getAttribute(key);
+    }
+
+    @Override
+    public Double getDouble(String key) {
+        return (Double) super.getAttribute(key);
+    }
+
+
     /**
      dispatching between the file via web container
      @param jspPath resource path
