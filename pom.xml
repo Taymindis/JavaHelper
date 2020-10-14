@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.taymindis</groupId>
-    <artifactId>JavaHelper</artifactId>
-    <version>1.0.5</version>
+    <artifactId>java-helper</artifactId>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
-    <name>JavaHelper</name>
+    <name>java-helper</name>
     <description>
         Java Helper to help for
         - SSL tls1.2 not working by default
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13</version>
+            <version>[4.13.1,)</version>
             <scope>test</scope>
         </dependency>
 

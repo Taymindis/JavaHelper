@@ -47,6 +47,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         }
     }
 
+    @Deprecated
     public static Object DirectResult(String resourcePath,
                                       HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
@@ -54,6 +55,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         return $ev.dispatch(resourcePath).getResult();
     }
 
+    @Deprecated
     public static Object DirectResult(String resourcePath,
                                       HttpServletRequest request,
                                       HttpServletResponse response,
@@ -65,6 +67,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         return $ev.dispatch(resourcePath).getResult();
     }
 
+    @Deprecated
     public static Object DirectResult(String resourcePath,
                                       HttpServletRequest request,
                                       HttpServletResponse response,
@@ -79,10 +82,12 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         return $ev.dispatch(resourcePath).getResult();
     }
 
+    @Deprecated
     public static Object DirectResult(String resourcePath, Dispatcher $ev) throws Exception {
         return $ev.dispatch(resourcePath).getResult();
     }
 
+    @Deprecated
     public static Object DirectResult(String resourcePath, Dispatcher $ev,
                                       Map<String, Object> params) throws Exception {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -91,7 +96,71 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         return $ev.dispatch(resourcePath).getResult();
     }
 
+    @Deprecated
     public static Object DirectResult(String resourcePath, Dispatcher $ev,
+                                      Object... params) throws Exception {
+        for (int i=0,sz = params.length; i < sz; i++) {
+            if(i%2 == 1) {
+                $ev.set((String) params[i-1], params[i]);
+            }
+        }
+
+        return $ev.dispatch(resourcePath).getResult();
+    }
+
+
+
+
+    public static Object directResult(String resourcePath,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response) throws Exception {
+        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        return $ev.dispatch(resourcePath).getResult();
+    }
+
+
+    public static Object directResult(String resourcePath,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response,
+                                      Map<String, Object> params) throws Exception {
+        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            $ev.set(entry.getKey(), entry.getValue());
+        }
+        return $ev.dispatch(resourcePath).getResult();
+    }
+
+
+    public static Object directResult(String resourcePath,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response,
+                                      Object... params) throws Exception {
+        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        for (int i=0,sz = params.length; i < sz; i++) {
+            if(i%2 == 1) {
+                $ev.set((String) params[i-1], params[i]);
+            }
+        }
+
+        return $ev.dispatch(resourcePath).getResult();
+    }
+
+
+    public static Object directResult(String resourcePath, Dispatcher $ev) throws Exception {
+        return $ev.dispatch(resourcePath).getResult();
+    }
+
+
+    public static Object directResult(String resourcePath, Dispatcher $ev,
+                                      Map<String, Object> params) throws Exception {
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            $ev.set(entry.getKey(), entry.getValue());
+        }
+        return $ev.dispatch(resourcePath).getResult();
+    }
+
+
+    public static Object directResult(String resourcePath, Dispatcher $ev,
                                       Object... params) throws Exception {
         for (int i=0,sz = params.length; i < sz; i++) {
             if(i%2 == 1) {
