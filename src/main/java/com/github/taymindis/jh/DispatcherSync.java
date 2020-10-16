@@ -32,31 +32,6 @@ public class DispatcherSync<T> extends Dispatcher {
         return this;
     }
 
-    @Override
-    public Object get(String key) {
-        return super.getAttribute(key);
-    }
-
-    @Override
-    public String getString(String key) {
-        return String.valueOf(super.getAttribute(key));
-    }
-
-    @Override
-    public Integer getInteger(String key) {
-        return (Integer) super.getAttribute(key);
-    }
-
-    @Override
-    public Long getLong(String key) {
-        return (Long) super.getAttribute(key);
-    }
-
-    @Override
-    public Double getDouble(String key) {
-        return (Double) super.getAttribute(key);
-    }
-
 
     /**
      dispatching between the file via web container
@@ -66,7 +41,7 @@ public class DispatcherSync<T> extends Dispatcher {
      @return OJHDispatcher
      */
     public DispatcherSync dispatch(String jspPath) throws ServletException, IOException {
-
+        setResult(null);
         super.getRequestDispatcher(Dispatcher.resourcePath + jspPath.replace(Dispatcher.splitter, "/") + Dispatcher.suffix)
                 .include(this, new HttpServletResponseWrapper(response) {
                     @Override
@@ -114,5 +89,7 @@ public class DispatcherSync<T> extends Dispatcher {
     public boolean isCancelled() {
         return false;
     }
+
+
 
 }

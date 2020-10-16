@@ -13,11 +13,16 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     public static String resourcePath = "";
     public static String suffix = "";
     public static String splitter = "^"; // default prevent any replacement
-    protected int httpStatus;
+    protected int httpStatus; // this is request status
+
+    private EventStatus evStatus; // this is event process result status
+    private String statusMessage;
 
     public Dispatcher(HttpServletRequest request) {
         super(request);
         httpStatus = -1;
+        evStatus = EventStatus.UNSET;
+        statusMessage = null;
     }
 
     public boolean isSuccess() {
@@ -73,9 +78,9 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
                                       HttpServletResponse response,
                                       Object... params) throws Exception {
         Dispatcher $ev = Dispatcher.newEvent(request, response);
-        for (int i=0,sz = params.length; i < sz; i++) {
-            if(i%2 == 1) {
-                $ev.set((String) params[i-1], params[i]);
+        for (int i = 0, sz = params.length; i < sz; i++) {
+            if (i % 2 == 1) {
+                $ev.set((String) params[i - 1], params[i]);
             }
         }
 
@@ -99,16 +104,14 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     @Deprecated
     public static Object DirectResult(String resourcePath, Dispatcher $ev,
                                       Object... params) throws Exception {
-        for (int i=0,sz = params.length; i < sz; i++) {
-            if(i%2 == 1) {
-                $ev.set((String) params[i-1], params[i]);
+        for (int i = 0, sz = params.length; i < sz; i++) {
+            if (i % 2 == 1) {
+                $ev.set((String) params[i - 1], params[i]);
             }
         }
 
         return $ev.dispatch(resourcePath).getResult();
     }
-
-
 
 
     public static Object directResult(String resourcePath,
@@ -136,9 +139,9 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
                                       HttpServletResponse response,
                                       Object... params) throws Exception {
         Dispatcher $ev = Dispatcher.newEvent(request, response);
-        for (int i=0,sz = params.length; i < sz; i++) {
-            if(i%2 == 1) {
-                $ev.set((String) params[i-1], params[i]);
+        for (int i = 0, sz = params.length; i < sz; i++) {
+            if (i % 2 == 1) {
+                $ev.set((String) params[i - 1], params[i]);
             }
         }
 
@@ -162,15 +165,14 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
 
     public static Object directResult(String resourcePath, Dispatcher $ev,
                                       Object... params) throws Exception {
-        for (int i=0,sz = params.length; i < sz; i++) {
-            if(i%2 == 1) {
-                $ev.set((String) params[i-1], params[i]);
+        for (int i = 0, sz = params.length; i < sz; i++) {
+            if (i % 2 == 1) {
+                $ev.set((String) params[i - 1], params[i]);
             }
         }
 
         return $ev.dispatch(resourcePath).getResult();
     }
-
 
     public static boolean isDispatchFutureEnabled() {
         return bgExecutor == null;
@@ -210,18 +212,92 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     }
 
 
-    public abstract Dispatcher addAttribute(String key, Object val);
+    public abstract Dispatcher<T> addAttribute(String key, Object val);
 
-    public abstract Dispatcher set(String key, Object val);
+    public abstract Dispatcher<T> set(String key, Object val);
 
-    public abstract Object get(String key);
+    public Boolean isStatus(EventStatus status) {
+        return this.evStatus == status;
+    }
+    public Boolean isStatus(EventStatus ...statuses) {
+        for(EventStatus s: statuses){
+            if(this.evStatus == s) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    public abstract String getString(String key);
-    public abstract Integer getInteger(String key);
-    public abstract Long getLong(String key);
-    public abstract Double getDouble(String key);
+    public Object getOrThrow(String key, String errMsg) throws NullPointerException {
+        Object o = super.getAttribute(key);
+        if (o == null) {
+            throw new NullPointerException(errMsg);
+        }
+        return o;
+    }
 
-    public abstract Dispatcher dispatch(String jspPathAndParam) throws ServletException, IOException, Exception;
+
+    public Object get(String key) {
+        return super.getAttribute(key);
+    }
+
+    public String getString(String key) {
+        try {
+            return String.valueOf(super.getAttribute(key));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Integer getInteger(String key) {
+        Object b = super.getAttribute(key);
+        try {
+            if (b instanceof Integer) {
+                return (Integer) b;
+            }
+            return Integer.parseInt(b.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Long getLong(String key) {
+        Object b = super.getAttribute(key);
+        try {
+            if (b instanceof Long) {
+                return (Long) b;
+            }
+            return Long.parseLong(b.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Double getDouble(String key) {
+        Object b = super.getAttribute(key);
+        try {
+            if (b instanceof Double) {
+                return (Double) b;
+            }
+            return Double.parseDouble(b.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Boolean getBoolean(String key) {
+        Object b = super.getAttribute(key);
+        try {
+            if (b instanceof Boolean) {
+                return (Boolean) b;
+            }
+            return Boolean.getBoolean(b.toString());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public abstract Dispatcher<T> dispatch(String jspPathAndParam) throws ServletException, IOException, Exception;
 
     public abstract void setResult(T rs);
 
@@ -232,4 +308,21 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     public abstract boolean isDone();
 
     public abstract boolean isCancelled();
+
+    public void setStatus(EventStatus status) {
+        this.evStatus = status;
+    }
+
+    public EventStatus getStatus() {
+        return evStatus;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
+    }
+
 }
