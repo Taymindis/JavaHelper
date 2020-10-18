@@ -13,20 +13,15 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     public static String resourcePath = "";
     public static String suffix = "";
     public static String splitter = "^"; // default prevent any replacement
-    protected int httpStatus; // this is request status
+    protected DispatcherResponse _dispatchResponse;
 
     private EventStatus evStatus; // this is event process result status
     private String statusMessage;
 
     public Dispatcher(HttpServletRequest request) {
         super(request);
-        httpStatus = -1;
         evStatus = EventStatus.UNSET;
         statusMessage = null;
-    }
-
-    public boolean isSuccess() {
-        return httpStatus >= 200 && httpStatus < 300;
     }
 
     public static Dispatcher newEvent(HttpServletRequest request, HttpServletResponse response) {

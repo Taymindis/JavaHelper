@@ -10,13 +10,12 @@ import java.util.concurrent.*;
  * dispatching async between web container
  */
 public class DispatcherFuture<T> extends Dispatcher {
-    private HttpServletResponse response;
     private Future<Void> f;
     private T result;
 
     protected DispatcherFuture(HttpServletRequest request, HttpServletResponse response) {
         super(request);
-        this.response = response;
+        this._dispatchResponse = new DispatcherResponse(response);
         this.f = null;
         this.result = null;
     }
@@ -55,26 +54,7 @@ public class DispatcherFuture<T> extends Dispatcher {
             @Override
             public Void call() throws Exception {
                 getRequest().getRequestDispatcher(Dispatcher.resourcePath + jspPath.replace(Dispatcher.splitter, "/") + Dispatcher.suffix)
-                        .include(df, new HttpServletResponseWrapper(response) {
-                            @Override
-                            public void sendError(int sc) throws IOException {
-                                httpStatus = sc;
-                                super.sendError(sc);
-                            }
-
-                            @Override
-                            public void sendError(int sc, String msg) throws IOException {
-                                httpStatus = sc;
-                                super.sendError(sc, msg);
-                            }
-
-
-                            @Override
-                            public void setStatus(int sc) {
-                                httpStatus = sc;
-                                super.setStatus(sc);
-                            }
-                        });
+                        .include(df, _dispatchResponse);
                 return null;
             }
         });
