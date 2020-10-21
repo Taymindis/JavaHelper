@@ -8,39 +8,41 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- dispatching in between web container
+ * dispatching in between web container
  */
-public class DispatcherSync<T> extends Dispatcher {
-//    private HttpServletResponse response;
-    private T result;
+public class SyncEvent extends Dispatcher implements Event {
+    //    private HttpServletResponse response;
+    private Object result;
 
-    protected DispatcherSync(HttpServletRequest request, HttpServletResponse response) {
+    protected SyncEvent(HttpServletRequest request, HttpServletResponse response) {
         super(request);
         this._dispatchResponse = new DispatcherResponse(response);
         this.result = null;
     }
 
-    public DispatcherSync addAttribute(String key, Object val) {
+    public SyncEvent addAttribute(String key, Object val) {
         super.setAttribute(key, val);
         return this;
     }
 
     @Override
-    public DispatcherSync set(String key, Object val) {
+    public SyncEvent set(String key, Object val) {
         super.setAttribute(key, val);
         return this;
     }
 
 
     /**
-     dispatching between the file via web container
-     @param jspPath resource path
-     @throws IOException IOException
-     @throws ServletException ServletException
-     @return OJHDispatcher
+     * dispatching between the file via web container
+     *
+     * @param jspPath resource path
+     * @return OJHDispatcher
+     * @throws IOException      IOException
+     * @throws ServletException ServletException
      */
-    public DispatcherSync dispatch(String jspPath) throws ServletException, IOException {
-        setResult(null);
+    @Override
+    public SyncEvent dispatch(String jspPath) throws ServletException, IOException {
+        clearPreviousStatus();
         super.getRequestDispatcher(Dispatcher.resourcePath + jspPath.replace(Dispatcher.splitter, "/") + Dispatcher.suffix)
                 .include(this, _dispatchResponse);
 
@@ -48,16 +50,16 @@ public class DispatcherSync<T> extends Dispatcher {
     }
 
     public void setResult(Object rs) {
-        this.result = (T) rs;
+        this.result = rs;
     }
 
-    public T getResult() {
-        return this.result;
+    public <T> T getResult() {
+        return (T) this.result;
     }
 
     @Override
-    public T getResult(long timeout, TimeUnit unit) {
-        return this.result;
+    public <T> T getResult(long timeout, TimeUnit unit) {
+        return (T) this.result;
     }
 
     @Override
@@ -69,7 +71,6 @@ public class DispatcherSync<T> extends Dispatcher {
     public boolean isCancelled() {
         return false;
     }
-
 
 
 }

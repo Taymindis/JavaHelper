@@ -1,14 +1,16 @@
 package com.github.taymindis.jh;
 
-import javax.servlet.ServletException;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
+public abstract class Dispatcher extends HttpServletRequestWrapper implements Event{
     private static ThreadPoolExecutor bgExecutor = null;
     public static String resourcePath = "";
     public static String suffix = "";
@@ -24,12 +26,15 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         statusMessage = null;
     }
 
-    public static Dispatcher newEvent(HttpServletRequest request, HttpServletResponse response) {
-        return new DispatcherSync(request, response);
+    public static Event newEvent(HttpServletRequest request, HttpServletResponse response) {
+        return new SyncEvent(request, response);
+    }
+    public static TransactionalEvent newTransactionEvent(HttpServletRequest request, HttpServletResponse response, String jndiResource) throws NamingException {
+        return new TransactionalEventImpl(request, response, jndiResource);
     }
 
-    public static Dispatcher newBackgroundEvent(HttpServletRequest request, HttpServletResponse response) {
-        return new DispatcherFuture(request, response);
+    public static Event newBackgroundEvent(HttpServletRequest request, HttpServletResponse response) {
+        return new FutureEvent(request, response);
     }
 
     public static void init(String $resourcePath, String $suffix, String $splitter, int nWorkerThread) {
@@ -51,7 +56,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     public static Object DirectResult(String resourcePath,
                                       HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
-        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        Event $ev = Dispatcher.newEvent(request, response);
         return $ev.dispatch(resourcePath).getResult();
     }
 
@@ -60,7 +65,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
                                       HttpServletRequest request,
                                       HttpServletResponse response,
                                       Map<String, Object> params) throws Exception {
-        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        Event $ev = Dispatcher.newEvent(request, response);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             $ev.set(entry.getKey(), entry.getValue());
         }
@@ -72,7 +77,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
                                       HttpServletRequest request,
                                       HttpServletResponse response,
                                       Object... params) throws Exception {
-        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        Event $ev = Dispatcher.newEvent(request, response);
         for (int i = 0, sz = params.length; i < sz; i++) {
             if (i % 2 == 1) {
                 $ev.set((String) params[i - 1], params[i]);
@@ -83,12 +88,12 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     }
 
     @Deprecated
-    public static Object DirectResult(String resourcePath, Dispatcher $ev) throws Exception {
+    public static Object DirectResult(String resourcePath, Event $ev) throws Exception {
         return $ev.dispatch(resourcePath).getResult();
     }
 
     @Deprecated
-    public static Object DirectResult(String resourcePath, Dispatcher $ev,
+    public static Object DirectResult(String resourcePath, Event $ev,
                                       Map<String, Object> params) throws Exception {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             $ev.set(entry.getKey(), entry.getValue());
@@ -97,7 +102,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     }
 
     @Deprecated
-    public static Object DirectResult(String resourcePath, Dispatcher $ev,
+    public static Object DirectResult(String resourcePath, Event $ev,
                                       Object... params) throws Exception {
         for (int i = 0, sz = params.length; i < sz; i++) {
             if (i % 2 == 1) {
@@ -108,11 +113,18 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         return $ev.dispatch(resourcePath).getResult();
     }
 
+    public <T> T getResult(Class<T> clazz) {
+        return getResult();
+    }
+
+    public <T> T getResult(long timeout, TimeUnit unit, Class<T> clazz) {
+        return getResult(timeout, unit);
+    }
 
     public static Object directResult(String resourcePath,
                                       HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
-        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        Event $ev = Dispatcher.newEvent(request, response);
         return $ev.dispatch(resourcePath).getResult();
     }
 
@@ -121,7 +133,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
                                       HttpServletRequest request,
                                       HttpServletResponse response,
                                       Map<String, Object> params) throws Exception {
-        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        Event $ev = Dispatcher.newEvent(request, response);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             $ev.set(entry.getKey(), entry.getValue());
         }
@@ -133,7 +145,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
                                       HttpServletRequest request,
                                       HttpServletResponse response,
                                       Object... params) throws Exception {
-        Dispatcher $ev = Dispatcher.newEvent(request, response);
+        Event $ev = Dispatcher.newEvent(request, response);
         for (int i = 0, sz = params.length; i < sz; i++) {
             if (i % 2 == 1) {
                 $ev.set((String) params[i - 1], params[i]);
@@ -144,12 +156,12 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     }
 
 
-    public static Object directResult(String resourcePath, Dispatcher $ev) throws Exception {
+    public static Object directResult(String resourcePath, Event $ev) throws Exception {
         return $ev.dispatch(resourcePath).getResult();
     }
 
 
-    public static Object directResult(String resourcePath, Dispatcher $ev,
+    public static Object directResult(String resourcePath, Event $ev,
                                       Map<String, Object> params) throws Exception {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             $ev.set(entry.getKey(), entry.getValue());
@@ -158,7 +170,7 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
     }
 
 
-    public static Object directResult(String resourcePath, Dispatcher $ev,
+    public static Object directResult(String resourcePath, Event $ev,
                                       Object... params) throws Exception {
         for (int i = 0, sz = params.length; i < sz; i++) {
             if (i % 2 == 1) {
@@ -206,10 +218,15 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         }
     }
 
-
-    public abstract Dispatcher<T> addAttribute(String key, Object val);
-
-    public abstract Dispatcher<T> set(String key, Object val);
+    protected void clearPreviousStatus() {
+        setResult(null);
+        setStatus(EventStatus.UNSET);
+        try {
+            this._dispatchResponse.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Boolean isStatus(EventStatus status) {
         return this.evStatus == status;
@@ -223,18 +240,29 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
         return false;
     }
 
-    public Object getOrThrow(String key, String errMsg) throws NullPointerException {
+    public <E> E getOrThrow(String key, String errMsg) throws NullPointerException, ClassCastException {
         Object o = super.getAttribute(key);
         if (o == null) {
             throw new NullPointerException(errMsg);
         }
-        return o;
+        return (E) o;
+    }
+
+    public <E> E get(String key) {
+        try {
+            return (E) super.getAttribute(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 
-    public Object get(String key) {
+    public Object getObject(String key) {
         return super.getAttribute(key);
     }
+
 
     public String getString(String key) {
         try {
@@ -291,18 +319,6 @@ public abstract class Dispatcher<T> extends HttpServletRequestWrapper {
             return false;
         }
     }
-
-    public abstract Dispatcher<T> dispatch(String jspPathAndParam) throws ServletException, IOException, Exception;
-
-    public abstract void setResult(T rs);
-
-    public abstract T getResult();
-
-    public abstract T getResult(long timeout, TimeUnit unit);
-
-    public abstract boolean isDone();
-
-    public abstract boolean isCancelled();
 
     public void setStatus(EventStatus status) {
         this.evStatus = status;

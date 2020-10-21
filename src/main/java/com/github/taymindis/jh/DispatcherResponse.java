@@ -22,7 +22,7 @@ public class DispatcherResponse extends HttpServletResponseWrapper {
     private int httpStatus;
     private final StringWriter sw = new StringWriter();
 
-    public DispatcherResponse(HttpServletResponse response) {
+    protected DispatcherResponse(HttpServletResponse response) {
         super(response);
         httpStatus = -1;
     }

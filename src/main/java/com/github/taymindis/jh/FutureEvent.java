@@ -9,24 +9,24 @@ import java.util.concurrent.*;
 /**
  * dispatching async between web container
  */
-public class DispatcherFuture<T> extends Dispatcher {
+public class FutureEvent extends Dispatcher implements Event{
     private Future<Void> f;
-    private T result;
+    private Object result;
 
-    protected DispatcherFuture(HttpServletRequest request, HttpServletResponse response) {
+    protected FutureEvent(HttpServletRequest request, HttpServletResponse response) {
         super(request);
         this._dispatchResponse = new DispatcherResponse(response);
         this.f = null;
         this.result = null;
     }
 
-    public DispatcherFuture addAttribute(String key, Object val) {
+    public FutureEvent addAttribute(String key, Object val) {
         super.setAttribute(key, val);
         return this;
     }
 
     @Override
-    public DispatcherFuture set(String key, Object val) {
+    public FutureEvent set(String key, Object val) {
         super.setAttribute(key, val);
         return this;
     }
@@ -41,15 +41,15 @@ public class DispatcherFuture<T> extends Dispatcher {
      * @throws ServletException ServletException
      */
     @Override
-    public synchronized DispatcherFuture dispatch(final String jspPath) throws Exception {
+    public synchronized FutureEvent dispatch(final String jspPath) throws Exception {
         if (isDispatchFutureEnabled()) {
             throw new Exception("Background Task feature is not enabled");
         }
         if (f != null) {
             throw new Exception("Process has been executed");
         }
-        setResult(null);
-        final DispatcherFuture df = this;
+        clearPreviousStatus();
+        final FutureEvent df = this;
         f = getBgExecutor().submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -77,11 +77,11 @@ public class DispatcherFuture<T> extends Dispatcher {
 
     @Override
     public void setResult(Object rs) {
-        this.result = (T) rs;
+        this.result = rs;
     }
 
     @Override
-    public T getResult() {
+    public <T> T getResult() {
         if(this.result == null) {
             try {
                 f.get();
@@ -91,11 +91,11 @@ public class DispatcherFuture<T> extends Dispatcher {
                 e.printStackTrace();
             }
         }
-        return result;
+        return (T) result;
     }
 
     @Override
-    public T getResult(long timeout, TimeUnit unit)  {
+    public <T> T getResult(long timeout, TimeUnit unit)  {
         if(this.result == null) {
             try {
                 f.get(timeout, unit);
@@ -107,7 +107,7 @@ public class DispatcherFuture<T> extends Dispatcher {
                 e.printStackTrace();
             }
         }
-        return result;
+        return (T) result;
     }
 
 }
