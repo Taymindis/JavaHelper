@@ -3,7 +3,7 @@ package com.github.taymindis.jh;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface TransactionalEvent extends Event {
+public interface EventTransaction extends Event {
 
 
     String queryOne(final String sql, Object... sqlParams) throws SQLException;

@@ -1,8 +1,7 @@
 package com.github.taymindis.jh;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -10,24 +9,23 @@ import java.util.concurrent.TimeUnit;
 /**
  * dispatching in between web container
  */
-public class SyncEvent extends Dispatcher implements Event {
+public class EventSync extends EventContext implements Event {
     //    private HttpServletResponse response;
     private Object result;
 
-    protected SyncEvent(HttpServletRequest request, HttpServletResponse response) {
-        super(request);
-        this._dispatchResponse = new DispatcherResponse(response);
+    protected EventSync(PageContext pc) {
+        super(pc);
         this.result = null;
     }
 
-    public SyncEvent addAttribute(String key, Object val) {
-        super.setAttribute(key, val);
+    public EventSync addAttribute(String key, Object val) {
+        this._pageContext.setAttribute(key, val, PageContext.REQUEST_SCOPE);
         return this;
     }
 
     @Override
-    public SyncEvent set(String key, Object val) {
-        super.setAttribute(key, val);
+    public EventSync set(String key, Object val) {
+        addAttribute(key, val);
         return this;
     }
 
@@ -41,11 +39,9 @@ public class SyncEvent extends Dispatcher implements Event {
      * @throws ServletException ServletException
      */
     @Override
-    public SyncEvent dispatch(String jspPath) throws ServletException, IOException {
+    public EventSync dispatch(String jspPath) throws ServletException, IOException {
         clearPreviousStatus();
-        super.getRequestDispatcher(Dispatcher.resourcePath + jspPath.replace(Dispatcher.splitter, "/") + Dispatcher.suffix)
-                .include(this, _dispatchResponse);
-
+        this._pageContext.include(resourcePath + jspPath.replace(splitter, "/") + suffix);
         return this;
     }
 
@@ -64,7 +60,7 @@ public class SyncEvent extends Dispatcher implements Event {
 
     @Override
     public boolean isDone() {
-        return _dispatchResponse.getStatus() != -1;
+        return this.result != null;
     }
 
     @Override

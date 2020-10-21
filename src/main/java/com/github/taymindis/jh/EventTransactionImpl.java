@@ -4,10 +4,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
+import javax.servlet.jsp.PageContext;
 import javax.sql.DataSource;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 //    maxIdle="20"
 //    minIdle="5"
 //    maxWait="10000"/>
-public class TransactionalEventImpl extends Dispatcher implements TransactionalEvent {
+public class EventTransactionImpl extends EventContext implements EventTransaction {
     private Object result;
     private Connection connection = null;
     private DataSource _ds;
@@ -47,15 +46,14 @@ public class TransactionalEventImpl extends Dispatcher implements TransactionalE
     private static final ConcurrentHashMap<String, DataSource> dsMaps = new ConcurrentHashMap<>();
 
 
-    public TransactionalEventImpl addAttribute(String key, Object val) {
-        super.setAttribute(key, val);
+    public EventTransactionImpl addAttribute(String key, Object val) {
+        this._pageContext.setAttribute(key, val, PageContext.REQUEST_SCOPE);
         return this;
     }
 
     @Override
-    public TransactionalEventImpl set(String key, Object val) {
-        super.setAttribute(key, val);
-        return this;
+    public EventTransactionImpl set(String key, Object val) {
+        return this.addAttribute(key, val);
     }
 
     /**
@@ -66,11 +64,9 @@ public class TransactionalEventImpl extends Dispatcher implements TransactionalE
      * @throws IOException      IOException
      * @throws ServletException ServletException
      */
-    public TransactionalEventImpl dispatch(String jspPath) throws ServletException, IOException {
+    public EventTransactionImpl dispatch(String jspPath) throws ServletException, IOException {
         clearPreviousStatus();
-        super.getRequestDispatcher(Dispatcher.resourcePath + jspPath.replace(Dispatcher.splitter, "/") + Dispatcher.suffix)
-                .include(this, _dispatchResponse);
-
+        this._pageContext.include(resourcePath + jspPath.replace(splitter, "/") + suffix);
         return this;
     }
 
@@ -89,7 +85,7 @@ public class TransactionalEventImpl extends Dispatcher implements TransactionalE
 
     @Override
     public boolean isDone() {
-        return _dispatchResponse.getStatus() != -1;
+        return this.result != null;
     }
 
     @Override
@@ -390,9 +386,8 @@ public class TransactionalEventImpl extends Dispatcher implements TransactionalE
 
     }
 
-    protected TransactionalEventImpl(HttpServletRequest request, HttpServletResponse response, String jndiResource) throws NamingException {
-        super(request);
-        this._dispatchResponse = new DispatcherResponse(response);
+    protected EventTransactionImpl(PageContext pc, String jndiResource) throws NamingException {
+        super(pc);
         this.result = null;
 
 

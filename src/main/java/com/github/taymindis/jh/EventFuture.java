@@ -1,7 +1,7 @@
 package com.github.taymindis.jh;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 import java.util.concurrent.*;
 
@@ -9,25 +9,24 @@ import java.util.concurrent.*;
 /**
  * dispatching async between web container
  */
-public class FutureEvent extends Dispatcher implements Event{
+public class EventFuture extends EventContext implements Event{
     private Future<Void> f;
     private Object result;
 
-    protected FutureEvent(HttpServletRequest request, HttpServletResponse response) {
-        super(request);
-        this._dispatchResponse = new DispatcherResponse(response);
+    protected EventFuture(PageContext pc) {
+        super(pc);
         this.f = null;
         this.result = null;
     }
 
-    public FutureEvent addAttribute(String key, Object val) {
-        super.setAttribute(key, val);
+    public EventFuture addAttribute(String key, Object val) {
+        this._pageContext.setAttribute(key, val, PageContext.REQUEST_SCOPE);
         return this;
     }
 
     @Override
-    public FutureEvent set(String key, Object val) {
-        super.setAttribute(key, val);
+    public EventFuture set(String key, Object val) {
+        this.addAttribute(key, val);
         return this;
     }
 
@@ -41,7 +40,7 @@ public class FutureEvent extends Dispatcher implements Event{
      * @throws ServletException ServletException
      */
     @Override
-    public synchronized FutureEvent dispatch(final String jspPath) throws Exception {
+    public synchronized EventFuture dispatch(final String jspPath) throws Exception {
         if (isDispatchFutureEnabled()) {
             throw new Exception("Background Task feature is not enabled");
         }
@@ -49,12 +48,12 @@ public class FutureEvent extends Dispatcher implements Event{
             throw new Exception("Process has been executed");
         }
         clearPreviousStatus();
-        final FutureEvent df = this;
+        final PageContext $pc = this._pageContext;
+        final EventFuture df = this;
         f = getBgExecutor().submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                getRequest().getRequestDispatcher(Dispatcher.resourcePath + jspPath.replace(Dispatcher.splitter, "/") + Dispatcher.suffix)
-                        .include(df, _dispatchResponse);
+                $pc.include(resourcePath + jspPath.replace(splitter, "/") + suffix);
                 return null;
             }
         });
