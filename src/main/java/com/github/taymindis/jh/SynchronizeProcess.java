@@ -12,6 +12,7 @@ public class SynchronizeProcess extends SynchronizeRequest {
     private boolean alertable;
     private Alertable Alertable;
     private static boolean isProcessOn = true;
+    private static long maxProcessingTime = 300L;
 
     static {
         notificationThreads = newThread();
@@ -52,6 +53,14 @@ public class SynchronizeProcess extends SynchronizeRequest {
         }
     }
 
+    public static long getMaxProcessingTime() {
+        return maxProcessingTime;
+    }
+
+    public static void setMaxProcessingTime(long maxProcessingTime) {
+        SynchronizeProcess.maxProcessingTime = maxProcessingTime;
+    }
+
     public Thread getProcessThread() {
         return processThread;
     }
@@ -89,7 +98,7 @@ public class SynchronizeProcess extends SynchronizeRequest {
                             }
                             Long startedTime = thisProcess.getRollingTime();
                             Long secs = (currTime - startedTime) / 1000L;
-                            if (secs > 300) {
+                            if (secs > maxProcessingTime) {
                                 thisProcess.Alertable.triggerAlert(thisProcess.getName(), "Processing time out");
                                 thisProcess.setRollingTime(currTime);
                                 pLiving.setValue(thisProcess);
