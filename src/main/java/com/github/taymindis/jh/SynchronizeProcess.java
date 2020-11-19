@@ -40,9 +40,9 @@ public class SynchronizeProcess extends SynchronizeRequest {
 
     @Override
     public void release() {
-        if (this.getProcessStatus() == PROCESS_IS_OK_TO_RUN) {
-            processNamesLiving.remove(this.getName());
-        }
+//        if (this.getProcessStatus() == PROCESS_IS_OK_TO_RUN) {
+        processNamesLiving.remove(this.getName());
+//        }
         super.release();
     }
 
@@ -75,11 +75,12 @@ public class SynchronizeProcess extends SynchronizeRequest {
 
     /**
      * Use in Risk
+     *
      * @param processName process name
      */
     public static void kill(String processName) {
         SynchronizeProcess syncTrackableProcess = processNamesLiving.get(processName);
-        if(syncTrackableProcess != null) {
+        if (syncTrackableProcess != null) {
             syncTrackableProcess.getProcessThread().interrupt();
             syncTrackableProcess.release();
         }
@@ -93,7 +94,7 @@ public class SynchronizeProcess extends SynchronizeRequest {
                         Long currTime = new Date().getTime();
                         for (Map.Entry<String, SynchronizeProcess> pLiving : processNamesLiving.entrySet()) {
                             SynchronizeProcess thisProcess = pLiving.getValue();
-                            if(!thisProcess.alertable) {
+                            if (!thisProcess.alertable) {
                                 continue;
                             }
                             Long startedTime = thisProcess.getRollingTime();

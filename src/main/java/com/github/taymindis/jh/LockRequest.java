@@ -8,8 +8,12 @@ public class LockRequest {
     }
 
     public boolean tryLock() {
+        return tryLock(-1);
+    }
+
+    public boolean tryLock(int maxRequestAccepted) {
         if(nssrq == null) {
-            nssrq = new SynchronizeRequest(this.reqName);
+            nssrq = new SynchronizeRequest(this.reqName, maxRequestAccepted);
         }
         if (nssrq.getProcessStatus() != SynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
             nssrq = null;

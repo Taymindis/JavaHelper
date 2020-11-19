@@ -10,8 +10,13 @@ public class SynchronizeRequest {
     private int processStatus;
 
     public SynchronizeRequest(String name) {
+        this(name, -1);
+    }
+    public SynchronizeRequest(String name, int maxRequest) {
         this.name = name;
-        if (name == null) {
+        if(maxRequest != -1 && _$requests.size() > maxRequest) {
+            processStatus = PROCESS_IS_OVERWHELMING;
+        } else if (name == null || name.isEmpty()) {
             processStatus = PROCESS_NAME_IS_EMPTY;
         } else {
             if (!_$requests.add(this.name)) {
@@ -20,6 +25,7 @@ public class SynchronizeRequest {
                 processStatus = PROCESS_IS_OK_TO_RUN;
             }
         }
+
     }
 
     public String getName() {
@@ -87,4 +93,5 @@ public class SynchronizeRequest {
     public static final int PROCESS_HAS_ERROR = 3;
     public static final int PROCESS_SHOULD_NOT_RUN = 4;
     public static final int PROCESS_NAME_IS_EMPTY = 5;
+    public static final int PROCESS_IS_OVERWHELMING = 6;
 }
