@@ -45,7 +45,8 @@ public class SynchronizeRequest {
     }
 
     public void release() {
-        if (this.processStatus == PROCESS_IS_OK_TO_RUN) {
+        if (this.processStatus == PROCESS_IS_OK_TO_RUN
+                || this.processStatus == PROCESS_HAS_ERROR) {
             _$requests.remove(this.name);
         }
     }
