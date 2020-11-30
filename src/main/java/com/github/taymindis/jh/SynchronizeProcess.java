@@ -40,9 +40,10 @@ public class SynchronizeProcess extends SynchronizeRequest {
 
     @Override
     public void release() {
-//        if (this.getProcessStatus() == PROCESS_IS_OK_TO_RUN) {
-        processNamesLiving.remove(this.getName());
-//        }
+        if (this.getProcessStatus() == PROCESS_IS_OK_TO_RUN
+            || this.getProcessStatus() == PROCESS_HAS_ERROR) {
+            processNamesLiving.remove(this.getName());
+        }
         super.release();
     }
 
