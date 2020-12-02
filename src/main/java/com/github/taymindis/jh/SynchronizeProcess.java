@@ -1,12 +1,12 @@
 package com.github.taymindis.jh;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SynchronizeProcess extends SynchronizeRequest {
     private static Thread notificationThreads;
-    private static Map<String, SynchronizeProcess> processNamesLiving = new HashMap<String, SynchronizeProcess>();
+    private static ConcurrentHashMap<String, SynchronizeProcess> processNamesLiving = new ConcurrentHashMap<String, SynchronizeProcess>();
     private Thread processThread;
     private Long rollingTime;
     private boolean alertable;
