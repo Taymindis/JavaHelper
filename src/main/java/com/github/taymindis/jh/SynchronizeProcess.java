@@ -2,11 +2,12 @@ package com.github.taymindis.jh;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SynchronizeProcess extends SynchronizeRequest {
     private static Thread notificationThreads;
-    private static ConcurrentHashMap<String, SynchronizeProcess> processNamesLiving = new ConcurrentHashMap<String, SynchronizeProcess>();
+    private static Map<String, SynchronizeProcess> processNamesLiving = new ConcurrentHashMap<String, SynchronizeProcess>();
     private Thread processThread;
     private Long rollingTime;
     private boolean alertable;
@@ -93,9 +94,12 @@ public class SynchronizeProcess extends SynchronizeRequest {
                 try {
                     while (isProcessOn) {
                         Long currTime = new Date().getTime();
-                        for (Map.Entry<String, SynchronizeProcess> pLiving : processNamesLiving.entrySet()) {
-                            SynchronizeProcess thisProcess = pLiving.getValue();
-                            if (!thisProcess.alertable) {
+
+                        Set<String> keySet = processNamesLiving.keySet();
+
+                        for(String key:keySet) {
+                            SynchronizeProcess thisProcess = processNamesLiving.get(key);
+                            if (thisProcess == null || !thisProcess.alertable) {
                                 continue;
                             }
                             Long startedTime = thisProcess.getRollingTime();
@@ -103,9 +107,9 @@ public class SynchronizeProcess extends SynchronizeRequest {
                             if (secs > maxProcessingTime) {
                                 thisProcess.Alertable.triggerAlert(thisProcess.getName(), "Processing time out");
                                 thisProcess.setRollingTime(currTime);
-                                pLiving.setValue(thisProcess);
                             }
                         }
+
                         Thread.sleep(1000);
                     }
                 } catch (InterruptedException e) {
