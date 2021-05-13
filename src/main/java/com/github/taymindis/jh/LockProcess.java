@@ -4,10 +4,12 @@ public class LockProcess {
     private final String reqName;
     private SynchronizeProcess synchronizeProcess = null;
     private Alertable Alertable;
+    private long processTimeout;
 
-    public LockProcess(String reqName, Alertable Alertable_) {
+    public LockProcess(String reqName, long processTimeout, Alertable Alertable_) {
         this.reqName = reqName;
-        if(Alertable_ == null) {
+        this.processTimeout = processTimeout;
+        if (Alertable_ == null) {
             Alertable = new Alertable() {
                 @Override
                 public boolean isApplicationRunning() {
@@ -42,7 +44,7 @@ public class LockProcess {
     public boolean tryLock() {
         try {
             if (synchronizeProcess == null) {
-                synchronizeProcess = new SynchronizeProcess(this.reqName, this.Alertable);
+                synchronizeProcess = new SynchronizeProcess(this.reqName, processTimeout, this.Alertable);
             }
             if (synchronizeProcess.getProcessStatus() != SynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
                 synchronizeProcess = null;
@@ -56,7 +58,7 @@ public class LockProcess {
     }
 
     public void unlock() {
-        if(synchronizeProcess != null) {
+        if (synchronizeProcess != null) {
             synchronizeProcess.release();
             synchronizeProcess = null;
         }

@@ -12,18 +12,21 @@ public class SynchronizeProcess extends SynchronizeRequest {
     private Long rollingTime;
     private boolean alertable;
     private Alertable Alertable;
+    private long processTimeout;
     private static boolean isProcessOn = true;
-    private static long maxProcessingTime = 300L;
+
+    private static long globalProcessTimeout = 3600L;
 
     static {
         notificationThreads = newThread();
         notificationThreads.start();
     }
 
-    public SynchronizeProcess(String name, Alertable Alertable_) {
+    public SynchronizeProcess(String name, long processTimeout, Alertable Alertable_) {
         super(name);
         int errCode = this.getErrorCode();
         this.Alertable = Alertable_;
+        this.processTimeout = processTimeout;
         this.alertable = this.Alertable.shouldAlert();
         if (errCode != SynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
             String log = name + " process is still running or invalid process ";
@@ -37,6 +40,10 @@ public class SynchronizeProcess extends SynchronizeRequest {
             rollingTime = new Date().getTime();
             processNamesLiving.put(name, this); // put started date
         }
+    }
+
+    public SynchronizeProcess(String name, Alertable alertable) {
+       this(name, globalProcessTimeout, alertable);
     }
 
     @Override
@@ -55,12 +62,29 @@ public class SynchronizeProcess extends SynchronizeRequest {
         }
     }
 
-    public static long getMaxProcessingTime() {
-        return maxProcessingTime;
+    public long getProcessTimeout() {
+        return processTimeout;
     }
 
+    public void setProcessTimeout(long processTimeout) {
+        this.processTimeout = processTimeout;
+    }
+
+    public static long getGlobalProcessTimeout() {
+        return globalProcessTimeout;
+    }
+
+    public static void setGlobalProcessTimeout(long globalProcessTimeout) {
+        SynchronizeProcess.globalProcessTimeout = globalProcessTimeout;
+    }
+
+    /**
+     Replacing by setGlobalProcessTimeout if singleProcessTimeoutNotSet
+     * @param maxProcessingTime max Processing time allowed
+     */
+    @Deprecated
     public static void setMaxProcessingTime(long maxProcessingTime) {
-        SynchronizeProcess.maxProcessingTime = maxProcessingTime;
+        SynchronizeProcess.globalProcessTimeout = maxProcessingTime;
     }
 
     public Thread getProcessThread() {
@@ -104,7 +128,7 @@ public class SynchronizeProcess extends SynchronizeRequest {
                             }
                             Long startedTime = thisProcess.getRollingTime();
                             Long secs = (currTime - startedTime) / 1000L;
-                            if (secs > maxProcessingTime) {
+                            if (secs > thisProcess.getProcessTimeout()) {
                                 thisProcess.Alertable.triggerAlert(thisProcess.getName(), "Processing time out");
                                 thisProcess.setRollingTime(currTime);
                             }
