@@ -48,7 +48,7 @@ public class LockProcess {
             }
             if (synchronizeProcess.getProcessStatus() != SynchronizeRequest.PROCESS_IS_OK_TO_RUN) {
                 synchronizeProcess = null;
-                Alertable.logError(new Exception("Process has been locked "));
+                Alertable.logError(new Exception(this.reqName + " - Process has been locked "));
                 return false;
             }
         } catch (Exception e) {
